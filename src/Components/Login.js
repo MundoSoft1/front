@@ -11,7 +11,7 @@ const Login = ({ onLogin }) => {
 
   const handleLogin = async () => {
     try {
-      const response = await fetch('http://54.173.247.52/login', { // URL correcta
+      const response = await fetch('https://54.173.247.52/login', { // URL correcta
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
