@@ -10,7 +10,7 @@ function Content() {
 
   const connectWebSocket = useCallback(() => {
     console.log('Attempting to connect to WebSocket');
-    const ws = new WebSocket('ws://localhost:8080');
+    const ws = new WebSocket('ws://52.20.121.208');
 
     ws.onopen = () => {
       console.log('Connected to WebSocket server');
