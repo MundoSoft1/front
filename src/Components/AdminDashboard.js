@@ -43,7 +43,7 @@ const AdminDashboard = () => {
     }).then(async (result) => {
       if (result.isConfirmed) {
         try {
-          await axios.delete(`https://54.173.247.52/image/${imageId}`); // Ajusta la URL según tu configuración
+          await axios.delete(`http://54.173.247.52/image/${imageId}`); // Ajusta la URL según tu configuración
           setImages(images.filter(image => image.id !== imageId)); // Actualiza el estado eliminando la imagen
           Swal.fire(
             'Eliminada!',
