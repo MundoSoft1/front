@@ -11,7 +11,7 @@ const AdminDashboard = () => {
   useEffect(() => {
     const fetchImages = async () => {
       try {
-        const response = await axios.get('https://54.173.247.52/images'); // Ajusta la URL según tu configuración
+        const response = await axios.get('http://54.173.247.52/images'); // Ajusta la URL según tu configuración
         const sortedImages = sortImages(response.data.data, sortOrder);
         setImages(sortedImages); // Ajusta la ruta a los datos según la respuesta de tu API
       } catch (error) {
