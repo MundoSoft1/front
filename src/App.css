@@ -1,0 +1,137 @@
+
+
+/* Contenido Pag 1*/
+
+.content-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 30px; 
+}
+
+.content-image {
+  width: 100%;
+  max-width: 300px; 
+  margin-bottom: 20px;
+}
+
+.icon-container {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+}
+
+.icon-link {
+  text-decoration: none;
+}
+
+.icon {
+  text-align: center;
+}
+
+.icon p {
+  margin-top: 10px;
+}
+
+@media (max-width: 768px) {
+  .icon-container {
+    flex-direction: column;
+    align-items: center;
+  }
+}
+
+/* Responsivo */
+
+/* Media query para dispositivos con un ancho máximo de 768px */
+@media screen and (max-width: 768px) {
+  .navbar {
+    flex-direction: column; 
+    align-items: flex-start;
+    padding: 10px 20px; 
+  }
+  
+  .logout-icon {
+    position: static; 
+    margin-top: 10px;
+  }
+
+  .icon-container {
+    flex-direction: column; 
+  }
+
+  .icon-container > div {
+    margin: 0.5rem 0;
+  }
+}
+
+
+.image-container {
+  border: 2px solid #ccc; 
+  padding: 10px; 
+  display: flex; 
+  justify-content: center; 
+  align-items: center;
+  height: 270px; 
+  width: 30%; 
+  margin: 0 auto; 
+  margin-bottom: 20px;
+ 
+}
+
+.content-image {
+  width: auto;
+  max-height: 100%; 
+  max-width: 100%; 
+  display: block; 
+ 
+}
+
+
+/* Navbar.css */
+.navbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 30px; /* Aumenta el padding horizontal */
+  background-color: #333;
+  color: white;
+  height: 100px; /* Ajusta la altura de la navbar */
+}
+
+.navbar-logo {
+  height: 110px; /* Aumenta el tamaño del logo */
+}
+
+.navbar-title {
+  flex-grow: 1;
+  text-align: center;
+  font-size: 2rem; /* Aumenta el tamaño del texto */
+}
+
+.navbar-actions {
+  display: flex;
+  align-items: center;
+}
+
+.login-button {
+  background-color: #007bff;
+  border: none;
+  color: white;
+  padding: 10px 20px; /* Aumenta el tamaño del botón */
+  margin-right: 15px; /* Aumenta el espacio entre el botón y el ícono de logout */
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1rem; /* Aumenta el tamaño del texto del botón */
+}
+
+.login-button:hover {
+  background-color: #0056b3;
+}
+
+.logout-icon {
+  cursor: pointer;
+  font-size: 1.5rem; /* Aumenta el tamaño del ícono */
+}
+
+
+
