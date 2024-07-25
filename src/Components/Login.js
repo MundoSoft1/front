@@ -7,7 +7,6 @@ const Login = ({ onLogin }) => {
   const navigate = useNavigate();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [errorMessage, setErrorMessage] = useState('');
 
   const handleLogin = async () => {
     try {
@@ -20,8 +19,7 @@ const Login = ({ onLogin }) => {
       });
 
       if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(`Error en la autenticación: ${errorText}`);
+        throw new Error('Error en la autenticación');
       }
 
       const data = await response.json();
@@ -41,7 +39,6 @@ const Login = ({ onLogin }) => {
       }
     } catch (error) {
       console.error('Error de autenticación:', error.message);
-      setErrorMessage(error.message);
     }
   };
 
@@ -66,7 +63,6 @@ const Login = ({ onLogin }) => {
       <div className="button-container">
         <button className='rojo' onClick={handleLogin}>Iniciar sesión</button>
       </div>
-      {errorMessage && <div className="error-message">{errorMessage}</div>}
     </div>
   );
 };
