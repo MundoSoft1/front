@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import authService from '../services/authService';
 import '../Login.css';
 import '../App.css'; 
 
@@ -36,10 +37,10 @@ const Login = ({ onLogin }) => {
       const userRole = data.rol;
       const token = data.token;
 
-      // Guarda el token en el almacenamiento local
-      localStorage.setItem('token', token);
-      onLogin(userRole);
+      // Notificar al componente padre con token y rol
+      onLogin(token, userRole);
       
+      // Redirigir según el rol
       if (userRole === 'admin') {
         navigate('/admin');
       } else if (userRole === 'user') {
