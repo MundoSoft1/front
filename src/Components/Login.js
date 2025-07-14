@@ -7,10 +7,20 @@ const Login = ({ onLogin }) => {
   const navigate = useNavigate();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState('');
 
   const handleLogin = async () => {
+    if (!username || !password) {
+      setError('Por favor, completa todos los campos');
+      return;
+    }
+
+    setIsLoading(true);
+    setError('');
+
     try {
-      const response = await fetch('http://54.173.247.52/login', { // URL correcta
+      const response = await fetch('http://54.173.247.52/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -19,14 +29,14 @@ const Login = ({ onLogin }) => {
       });
 
       if (!response.ok) {
-        throw new Error('Error en la autenticación');
+        throw new Error('Credenciales inválidas');
       }
 
       const data = await response.json();
       const userRole = data.rol;
       const token = data.token;
 
-      // Guarda el token en el almacenamiento local o en el estado de la aplicación
+      // Guarda el token en el almacenamiento local
       localStorage.setItem('token', token);
       onLogin(userRole);
       
@@ -39,29 +49,59 @@ const Login = ({ onLogin }) => {
       }
     } catch (error) {
       console.error('Error de autenticación:', error.message);
+      setError(error.message || 'Error al iniciar sesión');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleKeyPress = (e) => {
+    if (e.key === 'Enter') {
+      handleLogin();
     }
   };
 
   return (
     <div className="login-container">
-      <div className="input-container">
-        <input
-          type="text"
-          placeholder="Usuario"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
-        />
-      </div>
-      <div className="input-container">
-        <input
-          type="password"
-          placeholder="Contraseña"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        />
-      </div>
-      <div className="button-container">
-        <button className='rojo' onClick={handleLogin}>Iniciar sesión</button>
+      <div className="login-form">
+        <h2 className="login-title">Iniciar Sesión</h2>
+        
+        <div className="input-container">
+          <label htmlFor="username">Usuario</label>
+          <input
+            id="username"
+            type="text"
+            placeholder="Ingresa tu usuario"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            onKeyPress={handleKeyPress}
+            disabled={isLoading}
+          />
+        </div>
+        
+        <div className="input-container">
+          <label htmlFor="password">Contraseña</label>
+          <input
+            id="password"
+            type="password"
+            placeholder="Ingresa tu contraseña"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            onKeyPress={handleKeyPress}
+            disabled={isLoading}
+          />
+        </div>
+        
+        {error && <div className="error-message">{error}</div>}
+        
+        <div className="button-container">
+          <button 
+            onClick={handleLogin}
+            disabled={isLoading}
+          >
+            {isLoading ? 'Iniciando sesión...' : 'Iniciar sesión'}
+          </button>
+        </div>
       </div>
     </div>
   );

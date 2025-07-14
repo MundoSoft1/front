@@ -63,7 +63,7 @@ const AdminDashboard = () => {
   };
 
   return (
-    <div>
+    <div className="dashboard-container">
       <h2 className="dashboard-title">Panel de Administrador</h2>
       <button className="sort-button" onClick={handleSortOrderChange}>
         Ordenar por fecha ({sortOrder === 'desc' ? 'Más reciente primero' : 'Más antigua primero'})

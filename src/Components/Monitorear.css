@@ -1,0 +1,130 @@
+/* Monitorear.css - Diseño responsivo */
+
+.monitorear-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: calc(100vh - 80px);
+  padding: 20px;
+  background-color: #f8f9fa;
+}
+
+.monitorear-content {
+  background: white;
+  padding: 40px;
+  border-radius: 15px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  max-width: 600px;
+  width: 100%;
+}
+
+.monitorear-title {
+  color: #333;
+  font-size: 2.5rem;
+  margin-bottom: 20px;
+  font-weight: bold;
+}
+
+.monitorear-description {
+  color: #666;
+  font-size: 1.1rem;
+  margin-bottom: 30px;
+  line-height: 1.6;
+}
+
+.monitorear-placeholder {
+  background-color: #f8f9fa;
+  border: 2px dashed #dee2e6;
+  border-radius: 10px;
+  padding: 40px;
+  margin-top: 20px;
+}
+
+.monitorear-placeholder p {
+  color: #6c757d;
+  font-size: 1rem;
+  margin: 0;
+  font-style: italic;
+}
+
+/* Media queries para responsividad */
+
+/* Tablets (768px - 1024px) */
+@media screen and (max-width: 1024px) {
+  .monitorear-container {
+    padding: 15px;
+  }
+  
+  .monitorear-content {
+    padding: 30px;
+  }
+  
+  .monitorear-title {
+    font-size: 2rem;
+  }
+  
+  .monitorear-description {
+    font-size: 1rem;
+  }
+}
+
+/* Móviles (hasta 767px) */
+@media screen and (max-width: 767px) {
+  .monitorear-container {
+    padding: 10px;
+  }
+  
+  .monitorear-content {
+    padding: 25px 20px;
+  }
+  
+  .monitorear-title {
+    font-size: 1.5rem;
+    margin-bottom: 15px;
+  }
+  
+  .monitorear-description {
+    font-size: 0.9rem;
+    margin-bottom: 25px;
+  }
+  
+  .monitorear-placeholder {
+    padding: 30px 20px;
+  }
+}
+
+/* Pantallas muy pequeñas (hasta 480px) */
+@media screen and (max-width: 480px) {
+  .monitorear-content {
+    padding: 20px 15px;
+  }
+  
+  .monitorear-title {
+    font-size: 1.3rem;
+  }
+  
+  .monitorear-description {
+    font-size: 0.8rem;
+  }
+  
+  .monitorear-placeholder {
+    padding: 25px 15px;
+  }
+}
+
+/* Pantallas de alta resolución */
+@media screen and (min-width: 1200px) {
+  .monitorear-content {
+    padding: 50px;
+    max-width: 700px;
+  }
+  
+  .monitorear-title {
+    font-size: 3rem;
+  }
+  
+  .monitorear-description {
+    font-size: 1.2rem;
+  }
+} 

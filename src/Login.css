@@ -1,56 +1,246 @@
-/* Login.css */
+/* Login.css - Diseño responsivo */
 
 .login-container {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  height: 100vh;
+  min-height: 100vh;
   background-color: #f3f4f6;
-  margin-top: -150px; 
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.login-form {
+  background: white;
+  padding: 40px;
+  border-radius: 15px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 400px;
+  text-align: center;
+}
+
+.login-title {
+  margin-bottom: 30px;
+  color: #333;
+  font-size: 2rem;
+  font-weight: bold;
 }
 
 .input-container {
-  margin-bottom: 20px;
+  margin-bottom: 25px;
+  text-align: left;
+}
+
+.input-container label {
+  display: block;
+  margin-bottom: 8px;
+  color: #555;
+  font-weight: 500;
+  font-size: 0.9rem;
 }
 
 .input-container input {
-  width: 300px;
+  width: 100%;
   padding: 15px;
   border: 2px solid #e0e0e0;
-  border-radius: 25px;
+  border-radius: 10px;
   font-size: 16px;
-  transition: border-color 0.3s, box-shadow 0.3s;
+  transition: all 0.3s ease;
+  box-sizing: border-box;
 }
 
 .input-container input:focus {
   border-color: #1aadc7;
-  box-shadow: 0 0 10px rgba(0, 109, 234, 0.2);
+  box-shadow: 0 0 0 3px rgba(26, 173, 199, 0.1);
   outline: none;
 }
 
+.input-container input::placeholder {
+  color: #999;
+}
+
 .button-container {
-  margin-top: 20px;
+  margin-top: 30px;
 }
 
 .button-container button {
-  width: 300px;
+  width: 100%;
   padding: 15px;
   background-color: #000000;
   color: #ffffff;
   border: none;
-  border-radius: 25px;
+  border-radius: 10px;
   font-size: 16px;
+  font-weight: 600;
   cursor: pointer;
-  transition: background-color 0.3s, transform 0.2s;
+  transition: all 0.3s ease;
+  box-sizing: border-box;
 }
 
 .button-container button:hover {
   background-color: #333333;
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
 }
 
 .button-container button:active {
-  transform: scale(0.98);
+  transform: translateY(0);
+}
+
+.button-container button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+/* Media queries para responsividad */
+
+/* Tablets (768px - 1024px) */
+@media screen and (max-width: 1024px) {
+  .login-container {
+    padding: 15px;
+  }
+  
+  .login-form {
+    padding: 30px;
+    max-width: 350px;
+  }
+  
+  .login-title {
+    font-size: 1.8rem;
+  }
+}
+
+/* Móviles (hasta 767px) */
+@media screen and (max-width: 767px) {
+  .login-container {
+    padding: 10px;
+    min-height: calc(100vh - 20px);
+  }
+  
+  .login-form {
+    padding: 25px 20px;
+    max-width: 100%;
+    border-radius: 10px;
+  }
+  
+  .login-title {
+    font-size: 1.5rem;
+    margin-bottom: 25px;
+  }
+  
+  .input-container {
+    margin-bottom: 20px;
+  }
+  
+  .input-container input {
+    padding: 12px;
+    font-size: 16px; /* Previene zoom en iOS */
+  }
+  
+  .button-container button {
+    padding: 12px;
+    font-size: 16px; /* Previene zoom en iOS */
+  }
+}
+
+/* Pantallas muy pequeñas (hasta 480px) */
+@media screen and (max-width: 480px) {
+  .login-container {
+    padding: 5px;
+  }
+  
+  .login-form {
+    padding: 20px 15px;
+  }
+  
+  .login-title {
+    font-size: 1.3rem;
+    margin-bottom: 20px;
+  }
+  
+  .input-container input {
+    padding: 10px;
+  }
+  
+  .button-container button {
+    padding: 10px;
+  }
+}
+
+/* Pantallas de alta resolución */
+@media screen and (min-width: 1200px) {
+  .login-form {
+    padding: 50px;
+    max-width: 450px;
+  }
+  
+  .login-title {
+    font-size: 2.2rem;
+  }
+  
+  .input-container input {
+    padding: 18px;
+    font-size: 18px;
+  }
+  
+  .button-container button {
+    padding: 18px;
+    font-size: 18px;
+  }
+}
+
+/* Mejoras de accesibilidad para dispositivos táctiles */
+@media (hover: none) and (pointer: coarse) {
+  .input-container input {
+    min-height: 44px;
+  }
+  
+  .button-container button {
+    min-height: 44px;
+  }
+  
+  .input-container label {
+    font-size: 1rem;
+  }
+}
+
+/* Animaciones de entrada */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.login-form {
+  animation: fadeInUp 0.6s ease-out;
+}
+
+/* Estados de error */
+.input-container.error input {
+  border-color: #dc3545;
+  box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.1);
+}
+
+.error-message {
+  color: #dc3545;
+  font-size: 0.8rem;
+  margin-top: 5px;
+  text-align: left;
+}
+
+/* Estados de éxito */
+.input-container.success input {
+  border-color: #28a745;
+  box-shadow: 0 0 0 3px rgba(40, 167, 69, 0.1);
 }
 
 
