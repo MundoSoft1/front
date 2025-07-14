@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Navbar from './Components/NavBar';
 import Content from './Components/Contenido'; 
@@ -6,38 +6,98 @@ import Hablar from './Components/Hablar';
 import Monitorear from './Components/Monitorear';
 import Llave from './Components/Llave';
 import AdminDashboard from './Components/AdminDashboard';
-import Login from './Components/Login'; // Importa el componente Login
-import './App.css';  // Importa el CSS global que podría incluir estilos para Navbar
-import './Login.css'; // Importa el CSS para el Login
+import Login from './Components/Login';
+import ProtectedRoute from './Components/ProtectedRoute';
+import LoadingSpinner from './Components/LoadingSpinner';
+import useAuth from './hooks/useAuth';
+import './App.css';
+import './Login.css';
 
 function App() {
-  const [isLoggedIn, setIsLoggedIn] = useState(true);  
-  const [userRole, setUserRole] = useState('user');    
+  const { isAuthenticated, userRole, isLoading, login, logout } = useAuth();
 
-  const handleLogin = (role) => {
-    setIsLoggedIn(true);
-    setUserRole(role);
-  };
-
-  const handleLogout = () => {
-    setIsLoggedIn(false);
-    setUserRole('');
-  };
-
-  console.log(isLoggedIn)
+  // Mostrar loading mientras se verifica la autenticación
+  if (isLoading) {
+    return <LoadingSpinner message="Verificando sesión..." />;
+  }
 
   return (
     <Router>
       <div>
-        <Navbar onLogout={handleLogout} />
+        <Navbar onLogout={logout} isLoggedIn={isAuthenticated} />
         <Routes>
-          <Route path="/" element={<Navigate to="/contenido" />} />
-          <Route path="/contenido" element={<Content />} />
-          <Route path="/hablar" element={<Hablar />} />
-          <Route path="/monitorear" element={<Monitorear />} />
-          <Route path="/llave" element={<Llave />} />
-          <Route path="/admin" element={userRole === 'admin' ? <AdminDashboard /> : <Navigate to="/contenido" />} />
-          <Route path="/login" element={<Login onLogin={handleLogin} />} /> {/* Ruta para Login */}
+          {/* Ruta raíz - redirigir según autenticación */}
+          <Route 
+            path="/" 
+            element={
+              isAuthenticated ? 
+                <Navigate to="/contenido" replace /> : 
+                <Navigate to="/login" replace />
+            } 
+          />
+          
+          {/* Ruta de login */}
+          <Route 
+            path="/login" 
+            element={
+              isAuthenticated ? 
+                <Navigate to="/contenido" replace /> : 
+                <Login onLogin={login} />
+            } 
+          />
+          
+          {/* Rutas protegidas */}
+          <Route 
+            path="/contenido" 
+            element={
+              <ProtectedRoute>
+                <Content />
+              </ProtectedRoute>
+            } 
+          />
+          
+          <Route 
+            path="/hablar" 
+            element={
+              <ProtectedRoute>
+                <Hablar />
+              </ProtectedRoute>
+            } 
+          />
+          
+          <Route 
+            path="/monitorear" 
+            element={
+              <ProtectedRoute>
+                <Monitorear />
+              </ProtectedRoute>
+            } 
+          />
+          
+          <Route 
+            path="/llave" 
+            element={
+              <ProtectedRoute>
+                <Llave />
+              </ProtectedRoute>
+            } 
+          />
+          
+          {/* Ruta de admin - requiere rol admin */}
+          <Route 
+            path="/admin" 
+            element={
+              <ProtectedRoute requiredRole="admin">
+                <AdminDashboard />
+              </ProtectedRoute>
+            } 
+          />
+          
+          {/* Ruta catch-all - redirigir a login */}
+          <Route 
+            path="*" 
+            element={<Navigate to="/login" replace />} 
+          />
         </Routes>
       </div>
     </Router>
