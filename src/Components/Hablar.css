@@ -1,0 +1,130 @@
+/* Hablar.css - Diseño responsivo */
+
+.hablar-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: calc(100vh - 80px);
+  padding: 20px;
+  background-color: #f8f9fa;
+}
+
+.hablar-content {
+  background: white;
+  padding: 40px;
+  border-radius: 15px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  max-width: 600px;
+  width: 100%;
+}
+
+.hablar-title {
+  color: #333;
+  font-size: 2.5rem;
+  margin-bottom: 20px;
+  font-weight: bold;
+}
+
+.hablar-description {
+  color: #666;
+  font-size: 1.1rem;
+  margin-bottom: 30px;
+  line-height: 1.6;
+}
+
+.hablar-placeholder {
+  background-color: #f8f9fa;
+  border: 2px dashed #dee2e6;
+  border-radius: 10px;
+  padding: 40px;
+  margin-top: 20px;
+}
+
+.hablar-placeholder p {
+  color: #6c757d;
+  font-size: 1rem;
+  margin: 0;
+  font-style: italic;
+}
+
+/* Media queries para responsividad */
+
+/* Tablets (768px - 1024px) */
+@media screen and (max-width: 1024px) {
+  .hablar-container {
+    padding: 15px;
+  }
+  
+  .hablar-content {
+    padding: 30px;
+  }
+  
+  .hablar-title {
+    font-size: 2rem;
+  }
+  
+  .hablar-description {
+    font-size: 1rem;
+  }
+}
+
+/* Móviles (hasta 767px) */
+@media screen and (max-width: 767px) {
+  .hablar-container {
+    padding: 10px;
+  }
+  
+  .hablar-content {
+    padding: 25px 20px;
+  }
+  
+  .hablar-title {
+    font-size: 1.5rem;
+    margin-bottom: 15px;
+  }
+  
+  .hablar-description {
+    font-size: 0.9rem;
+    margin-bottom: 25px;
+  }
+  
+  .hablar-placeholder {
+    padding: 30px 20px;
+  }
+}
+
+/* Pantallas muy pequeñas (hasta 480px) */
+@media screen and (max-width: 480px) {
+  .hablar-content {
+    padding: 20px 15px;
+  }
+  
+  .hablar-title {
+    font-size: 1.3rem;
+  }
+  
+  .hablar-description {
+    font-size: 0.8rem;
+  }
+  
+  .hablar-placeholder {
+    padding: 25px 15px;
+  }
+}
+
+/* Pantallas de alta resolución */
+@media screen and (min-width: 1200px) {
+  .hablar-content {
+    padding: 50px;
+    max-width: 700px;
+  }
+  
+  .hablar-title {
+    font-size: 3rem;
+  }
+  
+  .hablar-description {
+    font-size: 1.2rem;
+  }
+} 

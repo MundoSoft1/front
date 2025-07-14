@@ -12,10 +12,13 @@ const Card = ({ date, imageUrl, buttonText, onDelete }) => {
 
   return (
     <div className="card">
-      <img src={imageUrl} alt="Imagen" className="card-image" />
-      <div className="card-info">
-        <p className="card-date">{formattedDate}</p>
-        <button className="delete-button" onClick={onDelete}>{buttonText}</button>
+      <img src={imageUrl} alt="Imagen" />
+      <div className="card-content">
+        <h3 className="card-title">Imagen capturada</h3>
+        <span className="card-date">{formattedDate}</span>
+        <button className="card-button" onClick={onDelete}>
+          {buttonText}
+        </button>
       </div>
     </div>
   );
