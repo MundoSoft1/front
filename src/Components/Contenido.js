@@ -1,28 +1,32 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPhone, faAddressBook } from '@fortawesome/free-solid-svg-icons';
+import useWebSocket from '../hooks/useWebSocket';
+import useStateOptimized from '../hooks/useStateOptimized';
 import '../App.css';
 
 function Content() {
-  const [showImage, setShowImage] = useState(false);
-  const [cameraIP, setCameraIP] = useState(null);
-  const [imageSrc, setImageSrc] = useState('');
+  // Estados optimizados
+  const { state: showImage, setState: setShowImage } = useStateOptimized(false);
+  const { state: cameraIP, setState: setCameraIP } = useStateOptimized(null);
+  const { state: imageSrc, setState: setImageSrc } = useStateOptimized('');
 
-  const connectWebSocket = useCallback(() => {
-    console.log('Attempting to connect to WebSocket');
-    const ws = new WebSocket('ws://52.20.121.208');
-
-    ws.onopen = () => {
-      console.log('Connected to WebSocket server');
-      ws.send('Hello from client');
-    };
-
-    ws.onmessage = (event) => {
+  // Hook optimizado para WebSocket
+  const {
+    isConnected,
+    isConnecting,
+    error: wsError,
+    sendMessage
+  } = useWebSocket('ws://52.20.121.208', {
+    onOpen: () => {
+      console.log('WebSocket conectado');
+      sendMessage('Hello from client');
+    },
+    onMessage: (event) => {
       console.log('Received message:', event.data);
       try {
         const message = event.data;
         if (typeof message === 'string' && message.startsWith('Mensaje de RabbitMQ:')) {
-          // Ajuste para el nuevo formato del mensaje
           const parts = message.split(': ');
           if (parts.length === 3) {
             const ip = parts[2].trim();
@@ -37,69 +41,75 @@ function Content() {
       } catch (error) {
         console.error('Error processing WebSocket message:', error);
       }
-    };
-
-    ws.onclose = () => {
-      console.log('WebSocket connection closed. Trying to reconnect...');
-      setTimeout(connectWebSocket, 2000);
-    };
-
-    ws.onerror = (error) => {
+    },
+    onError: (error) => {
       console.error('WebSocket error:', error);
-    };
+    }
+  });
 
-    return () => {
-      ws.close();
-    };
-  }, []);
+  // Función optimizada para actualizar imagen
+  const updateImageSource = useCallback(() => {
+    const newSrc = cameraIP 
+      ? `http://${cameraIP}/capture?${new Date().getTime()}`
+      : 'https://via.placeholder.com/640x480.png?text=Waiting+for+camera+IP';
+    console.log('Updating image source:', newSrc);
+    setImageSrc(newSrc);
+  }, [cameraIP, setImageSrc]);
 
-  useEffect(() => {
-    connectWebSocket();
-  }, [connectWebSocket]);
-
+  // Efecto optimizado para manejo de imagen
   useEffect(() => {
     console.log('Effect triggered. showImage:', showImage, 'cameraIP:', cameraIP);
-    let interval;
-    if (showImage) {
-      const updateImageSource = () => {
-        const newSrc = cameraIP 
-          ? `http://${cameraIP}/capture?${new Date().getTime()}`
-          : 'https://via.placeholder.com/640x480.png?text=Waiting+for+camera+IP';
-        console.log('Updating image source:', newSrc);
-        setImageSrc(newSrc);
-      };
-      updateImageSource();
-      interval = setInterval(updateImageSource, 5000);
+    
+    if (!showImage) {
+      return;
     }
+
+    // Actualizar imagen inmediatamente
+    updateImageSource();
+
+    // Configurar intervalo para actualizaciones periódicas
+    const interval = setInterval(updateImageSource, 5000);
+
+    // Cleanup del intervalo
     return () => {
-      if (interval) {
-        clearInterval(interval);
-      }
+      clearInterval(interval);
     };
+  }, [showImage, cameraIP, updateImageSource]);
+
+  // Función optimizada para manejar click en monitor
+  const handleMonitorClick = useCallback(() => {
+    console.log('Monitor button clicked');
+    setShowImage(prevShowImage => {
+      console.log('Setting showImage to:', !prevShowImage);
+      return !prevShowImage;
+    });
+  }, [setShowImage]);
+
+  // Función optimizada para manejar error de imagen
+  const handleImageError = useCallback((e) => {
+    console.error('Error loading image:', e);
+    e.target.src = 'https://via.placeholder.com/640x480.png?text=Error+loading+image';
+  }, []);
+
+  // URL de imagen calculada con useMemo para optimización
+  const currentImageUrl = useMemo(() => {
+    if (!showImage) return '';
+    return cameraIP 
+      ? `http://${cameraIP}/capture?${new Date().getTime()}`
+      : 'https://via.placeholder.com/640x480.png?text=Waiting+for+camera+IP';
   }, [showImage, cameraIP]);
 
-  const handleMonitorClick = () => {
-    console.log('Monitor button clicked');
-    setShowImage(prev => {
-      console.log('Setting showImage to:', !prev);
-      return !prev;
-    });
-  };
-
-  console.log(imageSrc)
+  console.log('Current image URL:', currentImageUrl);
 
   return (
     <div className="content-container">
       <div className="image-container">
         {showImage && (
           <img
-            src={cameraIP ? `http://${cameraIP}/capture?${new Date().getTime()}` : 'https://via.placeholder.com/640x480.png?text=Waiting+for+camera+IP'}
+            src={currentImageUrl}
             alt="ESP32-CAM"
             className="content-image"
-            onError={(e) => {
-              console.error('Error loading image:', e);
-              e.target.src = 'https://via.placeholder.com/640x480.png?text=Error+loading+image';
-            }}
+            onError={handleImageError}
           />
         )}
       </div>
@@ -122,6 +132,19 @@ function Content() {
           </div>
         </div>
       </div>
+
+      {/* Indicador de estado de WebSocket */}
+      {wsError && (
+        <div className="ws-error">
+          Error de conexión WebSocket: {wsError}
+        </div>
+      )}
+      
+      {isConnecting && (
+        <div className="ws-connecting">
+          Conectando al servidor...
+        </div>
+      )}
     </div>
   );
 }
