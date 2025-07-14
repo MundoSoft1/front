@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import authService from '../services/authService';
+import apiService from '../services/apiService';
+import ErrorMessage from './ErrorMessage';
 import '../Login.css';
 import '../App.css'; 
 
@@ -21,19 +22,7 @@ const Login = ({ onLogin }) => {
     setError('');
 
     try {
-      const response = await fetch('http://54.173.247.52/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ correo: username, password }),
-      });
-
-      if (!response.ok) {
-        throw new Error('Credenciales inválidas');
-      }
-
-      const data = await response.json();
+      const data = await apiService.login({ correo: username, password });
       const userRole = data.rol;
       const token = data.token;
 
@@ -49,7 +38,7 @@ const Login = ({ onLogin }) => {
         throw new Error('Rol de usuario no válido');
       }
     } catch (error) {
-      console.error('Error de autenticación:', error.message);
+      console.error('Error de autenticación:', error);
       setError(error.message || 'Error al iniciar sesión');
     } finally {
       setIsLoading(false);
@@ -60,6 +49,15 @@ const Login = ({ onLogin }) => {
     if (e.key === 'Enter') {
       handleLogin();
     }
+  };
+
+  const handleRetry = () => {
+    setError('');
+    handleLogin();
+  };
+
+  const handleDismissError = () => {
+    setError('');
   };
 
   return (
@@ -93,7 +91,13 @@ const Login = ({ onLogin }) => {
           />
         </div>
         
-        {error && <div className="error-message">{error}</div>}
+        <ErrorMessage 
+          error={error}
+          onRetry={handleRetry}
+          onDismiss={handleDismissError}
+          showRetry={true}
+          showDismiss={true}
+        />
         
         <div className="button-container">
           <button 
