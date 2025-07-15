@@ -1,26 +1,36 @@
 import React, { useEffect, useState } from 'react';
 import Card from './Card';
-import Swal from 'sweetalert2';
+import ErrorMessage from './ErrorMessage';
+import LoadingSpinner from './LoadingSpinner';
+import apiService from '../services/apiService';
 import '../Card.css';
-import axios from 'axios';
 
 const AdminDashboard = () => {
   const [images, setImages] = useState([]);
-  const [sortOrder, setSortOrder] = useState('desc'); // 'desc' para descendente, 'asc' para ascendente
+  const [sortOrder, setSortOrder] = useState('desc');
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+  const [deleteLoading, setDeleteLoading] = useState(null);
 
   useEffect(() => {
-    const fetchImages = async () => {
-      try {
-        const response = await axios.get('http://54.173.247.52/images'); // Ajusta la URL según tu configuración
-        const sortedImages = sortImages(response.data.data, sortOrder);
-        setImages(sortedImages); // Ajusta la ruta a los datos según la respuesta de tu API
-      } catch (error) {
-        console.error('Error al obtener las imágenes:', error);
-      }
-    };
-
     fetchImages();
-  }, [sortOrder]); // Vuelve a ejecutar si sortOrder cambia
+  }, [sortOrder]);
+
+  const fetchImages = async () => {
+    setLoading(true);
+    setError('');
+    
+    try {
+      const response = await apiService.getImages();
+      const sortedImages = sortImages(response.data, sortOrder);
+      setImages(sortedImages);
+    } catch (error) {
+      console.error('Error al obtener las imágenes:', error);
+      setError(error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const sortImages = (images, order) => {
     return images.sort((a, b) => order === 'desc' 
@@ -32,52 +42,72 @@ const AdminDashboard = () => {
     setSortOrder(prevOrder => prevOrder === 'desc' ? 'asc' : 'desc');
   };
 
-  const handleDelete = (imageId) => {
-    Swal.fire({
-      title: '¿Estás seguro?',
-      text: `¿Quieres eliminar la tarjeta con ID "${imageId}"?`,
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonText: 'Sí, eliminar',
-      cancelButtonText: 'Cancelar',
-    }).then(async (result) => {
-      if (result.isConfirmed) {
-        try {
-          await axios.delete(`http://54.173.247.52/images/${imageId}`); // Ajusta la URL según tu configuración
-          setImages(images.filter(image => image.id !== imageId)); // Actualiza el estado eliminando la imagen
-          Swal.fire(
-            'Eliminada!',
-            `La tarjeta con ID "${imageId}" ha sido eliminada.`,
-            'success'
-          );
-        } catch (error) {
-          console.error('Error al eliminar la imagen:', error);
-          Swal.fire(
-            'Error!',
-            'No se pudo eliminar la tarjeta.',
-            'error'
-          );
-        }
-      }
-    });
+  const handleDelete = async (imageId) => {
+    if (!window.confirm(`¿Estás seguro de que quieres eliminar la imagen con ID "${imageId}"?`)) {
+      return;
+    }
+
+    setDeleteLoading(imageId);
+    
+    try {
+      await apiService.deleteImage(imageId);
+      setImages(images.filter(image => image.id !== imageId));
+      
+      // Mostrar mensaje de éxito
+      alert('Imagen eliminada exitosamente');
+    } catch (error) {
+      console.error('Error al eliminar la imagen:', error);
+      alert(`Error al eliminar la imagen: ${error.message}`);
+    } finally {
+      setDeleteLoading(null);
+    }
   };
+
+  const handleRetry = () => {
+    fetchImages();
+  };
+
+  const handleDismissError = () => {
+    setError('');
+  };
+
+  if (loading) {
+    return <LoadingSpinner message="Cargando imágenes..." />;
+  }
 
   return (
     <div className="dashboard-container">
       <h2 className="dashboard-title">Panel de Administrador</h2>
+      
       <button className="sort-button" onClick={handleSortOrderChange}>
         Ordenar por fecha ({sortOrder === 'desc' ? 'Más reciente primero' : 'Más antigua primero'})
       </button>
+      
+      <ErrorMessage 
+        error={error}
+        onRetry={handleRetry}
+        onDismiss={handleDismissError}
+        showRetry={true}
+        showDismiss={true}
+      />
+      
       <div className="card-container">
-        {images.map((image) => (
-          <Card 
-            key={image.id} 
-            date={image.date} 
-            imageUrl={image.url} 
-            buttonText="Eliminar" 
-            onDelete={() => handleDelete(image.id)} 
-          />
-        ))}
+        {images.length === 0 && !error ? (
+          <div className="no-images-message">
+            <p>No hay imágenes disponibles</p>
+          </div>
+        ) : (
+          images.map((image) => (
+            <Card 
+              key={image.id} 
+              date={image.date} 
+              imageUrl={image.url} 
+              buttonText="Eliminar" 
+              onDelete={() => handleDelete(image.id)}
+              isLoading={deleteLoading === image.id}
+            />
+          ))
+        )}
       </div>
     </div>
   );
