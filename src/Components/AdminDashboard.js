@@ -1,48 +1,55 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useCallback, useMemo } from 'react';
 import Card from './Card';
 import ErrorMessage from './ErrorMessage';
 import LoadingSpinner from './LoadingSpinner';
 import apiService from '../services/apiService';
+import useStateOptimized from '../hooks/useStateOptimized';
 import '../Card.css';
 
 const AdminDashboard = () => {
-  const [images, setImages] = useState([]);
-  const [sortOrder, setSortOrder] = useState('desc');
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
-  const [deleteLoading, setDeleteLoading] = useState(null);
+  // Estados optimizados
+  const { 
+    state: images, 
+    removeFromArrayByCondition,
+    updateArray 
+  } = useStateOptimized([]);
+  
+  const { state: sortOrder, setState: setSortOrder } = useStateOptimized('desc');
+  const { state: loading, setState: setLoading } = useStateOptimized(true);
+  const { state: error, setState: setError } = useStateOptimized('');
+  const { state: deleteLoading, setState: setDeleteLoading } = useStateOptimized(null);
 
-  useEffect(() => {
-    fetchImages();
-  }, [sortOrder]);
-
-  const fetchImages = async () => {
+  // Función optimizada para obtener imágenes
+  const fetchImages = useCallback(async () => {
     setLoading(true);
     setError('');
     
     try {
       const response = await apiService.getImages();
       const sortedImages = sortImages(response.data, sortOrder);
-      setImages(sortedImages);
+      updateArray(() => sortedImages);
     } catch (error) {
       console.error('Error al obtener las imágenes:', error);
       setError(error.message);
     } finally {
       setLoading(false);
     }
-  };
+  }, [sortOrder, setLoading, setError, updateArray]);
 
-  const sortImages = (images, order) => {
-    return images.sort((a, b) => order === 'desc' 
+  // Función optimizada para ordenar imágenes
+  const sortImages = useCallback((images, order) => {
+    return [...images].sort((a, b) => order === 'desc' 
       ? new Date(b.date) - new Date(a.date) 
-      : new Date(a.date) - new Date(b.date));
-  };
+      : new Date(a.date) - new Date(a.date));
+  }, []);
 
-  const handleSortOrderChange = () => {
+  // Función optimizada para cambiar orden
+  const handleSortOrderChange = useCallback(() => {
     setSortOrder(prevOrder => prevOrder === 'desc' ? 'asc' : 'desc');
-  };
+  }, [setSortOrder]);
 
-  const handleDelete = async (imageId) => {
+  // Función optimizada para eliminar imagen
+  const handleDelete = useCallback(async (imageId) => {
     if (!window.confirm(`¿Estás seguro de que quieres eliminar la imagen con ID "${imageId}"?`)) {
       return;
     }
@@ -51,7 +58,7 @@ const AdminDashboard = () => {
     
     try {
       await apiService.deleteImage(imageId);
-      setImages(images.filter(image => image.id !== imageId));
+      removeFromArrayByCondition(image => image.id !== imageId);
       
       // Mostrar mensaje de éxito
       alert('Imagen eliminada exitosamente');
@@ -61,15 +68,40 @@ const AdminDashboard = () => {
     } finally {
       setDeleteLoading(null);
     }
-  };
+  }, [setDeleteLoading, removeFromArrayByCondition]);
 
-  const handleRetry = () => {
+  // Función optimizada para reintentar
+  const handleRetry = useCallback(() => {
     fetchImages();
-  };
+  }, [fetchImages]);
 
-  const handleDismissError = () => {
+  // Función optimizada para descartar error
+  const handleDismissError = useCallback(() => {
     setError('');
-  };
+  }, [setError]);
+
+  // Efecto optimizado para cargar imágenes
+  useEffect(() => {
+    fetchImages();
+  }, [fetchImages]);
+
+  // Efecto optimizado para reordenar cuando cambia el orden
+  useEffect(() => {
+    if (images.length > 0) {
+      const sortedImages = sortImages(images, sortOrder);
+      updateArray(() => sortedImages);
+    }
+  }, [sortOrder, images, sortImages, updateArray]);
+
+  // Estado calculado para el botón de orden
+  const sortButtonText = useMemo(() => {
+    return `Ordenar por fecha (${sortOrder === 'desc' ? 'Más reciente primero' : 'Más antigua primero'})`;
+  }, [sortOrder]);
+
+  // Estado calculado para verificar si hay imágenes
+  const hasImages = useMemo(() => {
+    return images.length > 0;
+  }, [images]);
 
   if (loading) {
     return <LoadingSpinner message="Cargando imágenes..." />;
@@ -80,7 +112,7 @@ const AdminDashboard = () => {
       <h2 className="dashboard-title">Panel de Administrador</h2>
       
       <button className="sort-button" onClick={handleSortOrderChange}>
-        Ordenar por fecha ({sortOrder === 'desc' ? 'Más reciente primero' : 'Más antigua primero'})
+        {sortButtonText}
       </button>
       
       <ErrorMessage 
@@ -92,7 +124,7 @@ const AdminDashboard = () => {
       />
       
       <div className="card-container">
-        {images.length === 0 && !error ? (
+        {!hasImages && !error ? (
           <div className="no-images-message">
             <p>No hay imágenes disponibles</p>
           </div>

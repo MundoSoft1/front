@@ -243,4 +243,106 @@
   box-shadow: 0 0 0 3px rgba(40, 167, 69, 0.1);
 }
 
+/* Estilos para inputs con error */
+.input-error {
+  border-color: #e74c3c !important;
+  box-shadow: 0 0 0 2px rgba(231, 76, 60, 0.2) !important;
+}
+
+.input-error:focus {
+  border-color: #e74c3c !important;
+  box-shadow: 0 0 0 2px rgba(231, 76, 60, 0.3) !important;
+}
+
+/* Mensajes de error */
+.error-message {
+  color: #e74c3c;
+  font-size: 0.875rem;
+  margin-top: 0.25rem;
+  display: block;
+  font-weight: 500;
+}
+
+/* Errores de validación generales */
+.validation-errors {
+  background-color: #fdf2f2;
+  border: 1px solid #fecaca;
+  border-radius: 0.5rem;
+  padding: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.validation-errors p {
+  color: #dc2626;
+  margin: 0;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+/* Botón deshabilitado */
+.button-disabled {
+  background-color: #9ca3af !important;
+  cursor: not-allowed !important;
+  opacity: 0.6 !important;
+}
+
+.button-disabled:hover {
+  background-color: #9ca3af !important;
+  transform: none !important;
+}
+
+/* Botón secundario */
+.button-secondary {
+  background-color: #6b7280 !important;
+  margin-left: 0.5rem;
+}
+
+.button-secondary:hover {
+  background-color: #4b5563 !important;
+}
+
+/* Estado del formulario */
+.form-status {
+  margin-top: 1rem;
+  padding: 0.75rem;
+  background-color: #f3f4f6;
+  border-radius: 0.5rem;
+  text-align: center;
+}
+
+.form-status p {
+  margin: 0.25rem 0;
+  font-size: 0.875rem;
+  color: #6b7280;
+}
+
+/* Responsive para nuevos elementos */
+@media (max-width: 768px) {
+  .button-container {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  
+  .button-secondary {
+    margin-left: 0;
+    margin-top: 0.5rem;
+  }
+  
+  .form-status {
+    margin-top: 0.75rem;
+    padding: 0.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .validation-errors {
+    padding: 0.5rem;
+    margin-bottom: 0.75rem;
+  }
+  
+  .error-message {
+    font-size: 0.8rem;
+  }
+}
+
 

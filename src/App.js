@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Navbar from './Components/NavBar';
 import Content from './Components/Contenido'; 
@@ -10,29 +10,59 @@ import Login from './Components/Login';
 import ProtectedRoute from './Components/ProtectedRoute';
 import LoadingSpinner from './Components/LoadingSpinner';
 import useAuth from './hooks/useAuth';
+import { GlobalStateProvider } from './hooks/useGlobalState';
 import './App.css';
 import './Login.css';
 
-function App() {
+function AppContent() {
   const { isAuthenticated, userRole, isLoading, login, logout } = useAuth();
 
+  // Función optimizada para manejar login
+  const handleLogin = useCallback((token, role) => {
+    login(token, role);
+  }, [login]);
+
+  // Función optimizada para manejar logout
+  const handleLogout = useCallback(() => {
+    logout();
+  }, [logout]);
+
+  // Estado calculado para rutas
+  const routeConfig = useMemo(() => {
+    if (isLoading) {
+      return { shouldShowLoading: true };
+    }
+
+    if (isAuthenticated) {
+      return {
+        shouldShowLoading: false,
+        defaultRoute: '/contenido',
+        loginRoute: '/contenido'
+      };
+    }
+
+    return {
+      shouldShowLoading: false,
+      defaultRoute: '/login',
+      loginRoute: '/login'
+    };
+  }, [isAuthenticated, isLoading]);
+
   // Mostrar loading mientras se verifica la autenticación
-  if (isLoading) {
+  if (routeConfig.shouldShowLoading) {
     return <LoadingSpinner message="Verificando sesión..." />;
   }
 
   return (
     <Router>
       <div>
-        <Navbar onLogout={logout} isLoggedIn={isAuthenticated} />
+        <Navbar onLogout={handleLogout} isLoggedIn={isAuthenticated} />
         <Routes>
           {/* Ruta raíz - redirigir según autenticación */}
           <Route 
             path="/" 
             element={
-              isAuthenticated ? 
-                <Navigate to="/contenido" replace /> : 
-                <Navigate to="/login" replace />
+              <Navigate to={routeConfig.defaultRoute} replace />
             } 
           />
           
@@ -41,8 +71,8 @@ function App() {
             path="/login" 
             element={
               isAuthenticated ? 
-                <Navigate to="/contenido" replace /> : 
-                <Login onLogin={login} />
+                <Navigate to={routeConfig.loginRoute} replace /> : 
+                <Login onLogin={handleLogin} />
             } 
           />
           
@@ -101,6 +131,14 @@ function App() {
         </Routes>
       </div>
     </Router>
+  );
+}
+
+function App() {
+  return (
+    <GlobalStateProvider>
+      <AppContent />
+    </GlobalStateProvider>
   );
 }
 
